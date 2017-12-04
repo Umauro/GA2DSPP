@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <fstream>
 #include <list>
+#include <vector>
+#include <random>
 
 class Objeto{
     public:
@@ -53,15 +55,31 @@ class Objeto{
 
 class Individuo{
     public:
-        std::list<Objeto> ordenObjetos;
+        std::vector<Objeto> ordenObjetos;
         int calidad;
 
         Individuo(){
             calidad = 10000000;
-            ordenObjetos = std::list<Objeto>();        }
+            ordenObjetos = std::vector<Objeto>();
+        }
 
         void addObjeto(Objeto obj){
             ordenObjetos.push_back(obj);
+        }
+
+        void mutar(float pmut){
+            double randomNumber;
+            for(auto &i : this->ordenObjetos){
+                randomNumber = ((double) std::rand() /RAND_MAX);
+                std::cout << "Estamos en el for " << randomNumber ;
+                if(randomNumber <= pmut){
+                    i.rotar();
+                }
+            }
+        }
+
+        void BLF(){
+            return;
         }
 };
 
@@ -74,7 +92,10 @@ class Solver{
         float probCruzamiento;
         float probMutacion;
         Individuo items;
-        std::list<Individuo> poblacionActual;
+        Individuo bestInd;
+        std::vector<Individuo> poblacionActual;
+        std::vector<Individuo> padres;
+        std::vector<Individuo> proxPoblacion;
 
         Solver(int iter, int tamano, int cruz, float pcruz, float pmut){
             this->cantidadIter = iter;
@@ -84,7 +105,8 @@ class Solver{
             this->probMutacion = pmut;
             this->anchoStrip = 0;
             items = Individuo();
-            poblacionActual = std::list<Individuo>();
+            poblacionActual = std::vector<Individuo>();
+            proxPoblacion = std::vector<Individuo>();
         }
 
         int leerInstancia(std::string instancia){
@@ -108,6 +130,50 @@ class Solver{
             return 0;
         }
 
+        void generarPoblacion(){
+            return;
+        }
+
+        void seleccionarPadres(){
+            return;
+        }
+
+        void cruzar(Individuo padre1, Individuo padre2){
+            return;
+        }
+
+        void evaluarPoblacionActual(){
+            return;
+        }
+
+        void evaluarProxPoblacion(){
+            return;
+        }
+
+        float getProbMutacion(){
+            return this->probMutacion;
+        }
+
+        float getProbCruzamiento(){
+            return this->probCruzamiento;
+        }
+
+        Individuo algoritmoGenetico(){
+            generarPoblacion();
+            evaluarPoblacionActual();
+            for(int i = 0; i < cantidadIter; i++){
+                seleccionarPadres();
+                for(int j=0; j < tamanoPoblacion; j += 2){
+                    //cruzar(padres[j], padres[j+1]);
+                }
+                for(auto &i : proxPoblacion){
+                    i.mutar(getProbMutacion());
+                }
+                evaluarProxPoblacion();
+                //this->poblacionActual = this->proxPoblacion;
+            }
+            return this->bestInd;
+        }
 
 };
 
@@ -129,5 +195,6 @@ int main(int args, char **argv){
 
     Solver solv = Solver(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atof(argv[5]), atof(argv[6]));
     solv.leerInstancia(argv[1]);
+    solv.algoritmoGenetico();
     return 0;
 }
