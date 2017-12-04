@@ -123,7 +123,7 @@ class Solver{
             this->anchoStrip = entrada1;
 
             while(archivo >> entrada1 >> entrada2 >> entrada3){
-                Objeto obj(entrada1, entrada2, entrada3);
+                Objeto obj{entrada1, entrada2, entrada3};
                 this->items.addObjeto(obj);
             }
 
@@ -193,7 +193,7 @@ int main(int args, char **argv){
         return 1;
     }
 
-    Solver solv = Solver(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atof(argv[5]), atof(argv[6]));
+    Solver solv = Solver{atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atof(argv[5]), atof(argv[6])};
     solv.leerInstancia(argv[1]);
     solv.algoritmoGenetico();
     return 0;
