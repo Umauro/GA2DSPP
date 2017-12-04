@@ -70,7 +70,7 @@ class Individuo{
         void mutar(float pmut){
             double randomNumber;
             for(auto &i : this->ordenObjetos){
-                randomNumber = ((double) std::rand() /RAND_MAX);
+                randomNumber = ((double)std::rand() /RAND_MAX);
                 std::cout << "Estamos en el for " << randomNumber ;
                 if(randomNumber <= pmut){
                     i.rotar();
@@ -81,10 +81,15 @@ class Individuo{
         void BLF(){
             return;
         }
+
+        void BL(){
+            return;
+        }
 };
 
 class Solver{
     public:
+        int cantidadItem;
         int cantidadIter;
         int tamanoPoblacion;
         int opCruzamiento;
@@ -118,6 +123,7 @@ class Solver{
             }
 
             archivo >> entrada1;
+            this->cantidadItem = entrada1;
             archivo >> entrada1;
 
             this->anchoStrip = entrada1;
@@ -131,6 +137,11 @@ class Solver{
         }
 
         void generarPoblacion(){
+            for(int i = 0; i < tamanoPoblacion; i++){
+                Individuo aux = items;
+                std::random_shuffle(aux.ordenObjetos.begin(), aux.ordenObjetos.end());
+                poblacionActual.push_back(aux);
+            }
             return;
         }
 
@@ -157,6 +168,7 @@ class Solver{
         float getProbCruzamiento(){
             return this->probCruzamiento;
         }
+
 
         Individuo algoritmoGenetico(){
             generarPoblacion();
@@ -193,7 +205,7 @@ int main(int args, char **argv){
         return 1;
     }
 
-    Solver solv = Solver{atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atof(argv[5]), atof(argv[6])};
+    Solver solv = Solver(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atof(argv[5]), atof(argv[6]));
     solv.leerInstancia(argv[1]);
     solv.algoritmoGenetico();
     return 0;
