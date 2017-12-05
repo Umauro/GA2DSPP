@@ -140,8 +140,6 @@ class Solver{
             return 0;
         }
 
-
-
         void generarPoblacion(){
             std::random_device rd;
             std::mt19937 g(rd());
@@ -157,6 +155,7 @@ class Solver{
             return;
         }
 
+        //Usando OrderBased-Crossover!!
         void cruzar(Individuo padre1, Individuo padre2){
             double randomNumber;
             randomNumber = ((double)std::rand() /RAND_MAX);
@@ -164,7 +163,7 @@ class Solver{
             //Si se realiza cruzamiento o no
 
             if(randomNumber < probCruzamiento){
-                //Acá hay que implementar el cruzamiento
+                //Se crean los hijos
                 Individuo hijo1 = Individuo();
                 Individuo hijo2 = Individuo();
 
@@ -189,7 +188,6 @@ class Solver{
                     corte2 = uni(rng);
                 }
 
-
                 //COMIENZA EL CRUZAMIENTOOOOOO!!!
                 if(corte1 > corte2){
                     int auxiliar = corte1;
@@ -200,7 +198,7 @@ class Solver{
                 std::map<int,int> hashPadre1;
                 std::map<int,int> hashPadre2;
 
-
+                //Se agrega a los hijos lo que esté entre los cortes
                 for(int i = corte1; i <= corte2; i++){
                     Objeto obj1 = padre1.ordenObjetos[i];
                     Objeto obj2 = padre2.ordenObjetos[i];
@@ -209,6 +207,7 @@ class Solver{
                     hashPadre1[obj1.getId()] = obj1.getId();
                     hashPadre2[obj2.getId()] = obj2.getId();
 
+                    //Se hereda el cromosoma!
                     hijo1.ordenObjetos[i] = obj1;
                     hijo2.ordenObjetos[i] = obj2;
 
@@ -236,9 +235,8 @@ class Solver{
 
                 i=0;
                 int k = 0;
+
                 //Rellenamos la primera parte para el segundo hijo
-
-
                 while(corte1 - i > 0){
                     std::map<int,int>::iterator it;
                     Objeto aux = padre1.ordenObjetos[k];
@@ -255,8 +253,6 @@ class Solver{
                 }
 
                 i = corte2 +1;
-
-
 
                 //Relleno de la segunda parte para el hijo 1
                 while(cantidadItem - i > 0){
@@ -276,9 +272,7 @@ class Solver{
                 }
 
                 i = corte2 +1;
-
                 //Relleno de la primera parte para el hijo 2
-
                 while(cantidadItem - i > 0){
                     std::map<int,int>::iterator it;
                     Objeto aux = padre1.ordenObjetos[k];
@@ -322,9 +316,12 @@ class Solver{
 
 
         Individuo algoritmoGenetico(){
+            //Generar la población Inicial
             generarPoblacion();
+            //Evaluar la población
             evaluarPoblacionActual();
             for(int i = 0; i < cantidadIter; i++){
+                //Aplicamos el operador de selección
                 seleccionarPadres();
                 //Poblacion de tamaño par
                 if(tamanoPoblacion%2 ==0){
@@ -346,7 +343,7 @@ class Solver{
                     //Acá se debe ingresar la mejor solución encontrada
                     proxPoblacion.push_back(poblacionActual[1]);
                 }
-
+                //Evaluamos nuestra nueva población
                 evaluarProxPoblacion();
                 this->poblacionActual = this->proxPoblacion;
                 this->proxPoblacion.clear();
