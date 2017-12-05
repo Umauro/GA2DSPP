@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <fstream>
 #include <list>
+#include <map>
 #include <vector>
 #include <random>
 
@@ -30,6 +31,10 @@ class Objeto{
 
         int getAlto(){
             return this->alto;
+        }
+
+        int getId(){
+            return this->id;
         }
 
         void setAncho(int anc){
@@ -71,7 +76,6 @@ class Individuo{
             double randomNumber;
             for(auto &i : this->ordenObjetos){
                 randomNumber = ((double)std::rand() /RAND_MAX);
-                std::cout << "Estamos en el for " << randomNumber ;
                 if(randomNumber <= pmut){
                     i.rotar();
                 }
@@ -129,17 +133,21 @@ class Solver{
             this->anchoStrip = entrada1;
 
             while(archivo >> entrada1 >> entrada2 >> entrada3){
-                Objeto obj{entrada1, entrada2, entrada3};
+                Objeto obj(entrada1, entrada2, entrada3);
                 this->items.addObjeto(obj);
             }
 
             return 0;
         }
 
+
+
         void generarPoblacion(){
+            std::random_device rd;
+            std::mt19937 g(rd());
             for(int i = 0; i < tamanoPoblacion; i++){
                 Individuo aux = items;
-                std::random_shuffle(aux.ordenObjetos.begin(), aux.ordenObjetos.end());
+                std::shuffle(aux.ordenObjetos.begin(), aux.ordenObjetos.end(),g);
                 poblacionActual.push_back(aux);
             }
             return;
@@ -150,6 +158,149 @@ class Solver{
         }
 
         void cruzar(Individuo padre1, Individuo padre2){
+            double randomNumber;
+            randomNumber = ((double)std::rand() /RAND_MAX);
+
+            //Si se realiza cruzamiento o no
+
+            if(randomNumber < probCruzamiento){
+                //Acá hay que implementar el cruzamiento
+                Individuo hijo1 = Individuo();
+                Individuo hijo2 = Individuo();
+
+                hijo1.ordenObjetos.resize(padre1.ordenObjetos.size(), Objeto(1,1,1));
+                hijo2.ordenObjetos.resize(padre1.ordenObjetos.size(), Objeto(1,1,1));
+
+                //Generador de Cortes Aleatorios
+                std::random_device rd;
+                std::mt19937 rng(rd());
+                std::uniform_int_distribution<int> uni(1,cantidadItem-1);
+
+                int corte1 = uni(rng);
+                int corte2 = uni(rng);
+                //Revisar que no se genere el mismo punto para el corte
+                while(corte1 == 0 || corte1 == (cantidadItem-1)){
+                    corte1 = uni(rng);
+                }
+                while(corte2 == 0 || corte2 == (cantidadItem-1)){
+                    corte2 = uni(rng);
+                }
+                while(corte1 == corte2){
+                    corte2 = uni(rng);
+                }
+
+
+                //COMIENZA EL CRUZAMIENTOOOOOO!!!
+                if(corte1 > corte2){
+                    int auxiliar = corte1;
+                    corte1 = corte2;
+                    corte2 = auxiliar;
+                }
+                //Creamos un Diccionario para ver si se agregó algo o no
+                std::map<int,int> hashPadre1;
+                std::map<int,int> hashPadre2;
+
+
+                for(int i = corte1; i <= corte2; i++){
+                    Objeto obj1 = padre1.ordenObjetos[i];
+                    Objeto obj2 = padre2.ordenObjetos[i];
+
+                    //Guardamos en un Hash para ver que items se agregaron
+                    hashPadre1[obj1.getId()] = obj1.getId();
+                    hashPadre2[obj2.getId()] = obj2.getId();
+
+                    hijo1.ordenObjetos[i] = obj1;
+                    hijo2.ordenObjetos[i] = obj2;
+
+                }
+                int i = 0;
+                int j = 0;
+
+                //Rellenamos la primera parte para el primer hijo
+                while(corte1 - i > 0){
+                    std::map<int,int>::iterator it;
+                    Objeto aux = padre2.ordenObjetos[j];
+
+                    it = hashPadre1.find(aux.getId());
+                    if(it == hashPadre1.end()){
+                        hashPadre1[aux.getId()] = aux.getId();
+                        hijo1.ordenObjetos[i] = aux;
+                        i++;
+                        j++;
+                    }
+                    else{
+                        j++;
+                    }
+
+                }
+
+                i=0;
+                int k = 0;
+                //Rellenamos la primera parte para el segundo hijo
+
+
+                while(corte1 - i > 0){
+                    std::map<int,int>::iterator it;
+                    Objeto aux = padre1.ordenObjetos[k];
+                    it = hashPadre2.find(aux.getId());
+                    if(it == hashPadre2.end()){
+                        hashPadre2[aux.getId()] = aux.getId();
+                        hijo2.ordenObjetos[i] = aux;
+                        i++;
+                        k++;
+                    }
+                    else{
+                        k++;
+                    }
+                }
+
+                i = corte2 +1;
+
+
+
+                //Relleno de la segunda parte para el hijo 1
+                while(cantidadItem - i > 0){
+                    std::map<int,int>::iterator it;
+                    Objeto aux = padre2.ordenObjetos[j];
+                    it = hashPadre1.find(aux.getId());
+                    if(it == hashPadre1.end()){
+                        hashPadre1[aux.getId()] = aux.getId();
+                        hijo1.ordenObjetos[i] = aux;
+                        i++;
+                        j++;
+                    }
+                    else{
+                        j++;
+                    }
+
+                }
+
+                i = corte2 +1;
+
+                //Relleno de la primera parte para el hijo 2
+
+                while(cantidadItem - i > 0){
+                    std::map<int,int>::iterator it;
+                    Objeto aux = padre1.ordenObjetos[k];
+                    it = hashPadre2.find(aux.getId());
+                    if(it == hashPadre2.end()){
+                        hashPadre2[aux.getId()] = aux.getId();
+                        hijo2.ordenObjetos[i] = aux;
+                        i++;
+                        k++;
+                    }
+                    else{
+                        k++;
+                    }
+
+                }
+                proxPoblacion.push_back(hijo1);
+                proxPoblacion.push_back(hijo2);
+            }
+            else{
+                proxPoblacion.push_back(padre1);
+                proxPoblacion.push_back(padre2);
+            }
             return;
         }
 
@@ -175,14 +326,30 @@ class Solver{
             evaluarPoblacionActual();
             for(int i = 0; i < cantidadIter; i++){
                 seleccionarPadres();
-                for(int j=0; j < tamanoPoblacion; j += 2){
-                    //cruzar(padres[j], padres[j+1]);
+                //Poblacion de tamaño par
+                if(tamanoPoblacion%2 ==0){
+                    for(int j=0; j < tamanoPoblacion; j += 2){
+                        cruzar(poblacionActual[j], poblacionActual[j+1]);
+                    }
+                    for(auto &i : proxPoblacion){
+                        i.mutar(getProbMutacion());
+                    }
                 }
-                for(auto &i : proxPoblacion){
-                    i.mutar(getProbMutacion());
+                //Poblacion de tamaño impar
+                else{
+                    for(int j=0; j < (tamanoPoblacion - 1); j += 2){
+                        cruzar(poblacionActual[j], poblacionActual[j+1]);
+                    }
+                    for(auto &i : proxPoblacion){
+                        i.mutar(getProbMutacion());
+                    }
+                    //Acá se debe ingresar la mejor solución encontrada
+                    proxPoblacion.push_back(poblacionActual[1]);
                 }
+
                 evaluarProxPoblacion();
-                //this->poblacionActual = this->proxPoblacion;
+                this->poblacionActual = this->proxPoblacion;
+                this->proxPoblacion.clear();
             }
             return this->bestInd;
         }
