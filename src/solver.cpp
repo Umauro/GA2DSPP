@@ -312,6 +312,7 @@ Individuo Solver::algoritmoGenetico(){
             //Acá se debe ingresar la mejor solución encontrada
             proxPoblacion.push_back(bestInd);
         }
+        //Aplicamos el operador de mutación
         for(auto &k : proxPoblacion){
             k.mutar(getProbMutacion(), anchoStrip);
         }
@@ -329,8 +330,8 @@ Individuo Solver::algoritmoGenetico(){
 
         this->poblacionActual = this->proxPoblacion;
         this->proxPoblacion.clear();
-        //std::cout << i << " " << bestInd.calidad <<"\n";
-        //Si no cambia la solución en 3/4 de la cantidad de iteraciones
+
+        //Si no cambia la solución en 3000 iteraciones se detiene el loop
         if(contadorCov == 3000){
             //std::cout<< i << "\n";
             break;

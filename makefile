@@ -42,6 +42,14 @@ INSTALL = install
 FIND = find
 CP = cp
 
+# Parameters
+INSTANCIA = instancias/HT01.TXT
+ITERACIONES = 10000
+POBLACION = 100
+PRINT = 0
+PCRUZ = 0.9
+PMUT = 0.3
+
 # Makefile rules
 .PHONY: all
 all: $(OBJDIR) $(EXEC)
@@ -54,6 +62,10 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 
 $(OBJDIR):
 	@$(MKDIR) -p $@
+
+.PHONY: run
+run:
+	./$(EXEC) $(INSTANCIA) $(ITERACIONES) $(POBLACION) $(PRINT) $(PCRUZ) $(PMUT) 	
 
 .PHONY: install
 install:
