@@ -30,7 +30,7 @@ OBJECTS = $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SOURCES))
 # Compiler options
 CXX ?= /usr/bin/g++
 CPPFLAGS = $(addprefix -I, $(HEADDIR)) -MMD -MP
-CFLAGS = -O2 -Wall 
+CFLAGS = -O2 -Wall
 LDFLAGS =
 LDLIBS =
 
@@ -69,6 +69,7 @@ cleanall: clean distclean
 .PHONY: clean
 clean:
 	$(FIND) . -iname '*.d'            -type f -delete
+	$(FIND) . -iname '*.OUTPUT'       -type f -delete
 	$(FIND) . -iname '*.o'            -type f -delete
 	$(FIND) . -iname '*.ko'           -type f -delete
 	$(FIND) . -iname '*.obj'          -type f -delete

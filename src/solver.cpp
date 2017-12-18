@@ -36,6 +36,7 @@ int Solver::leerInstancia(std::string instancia){
     std::ifstream archivo(instancia);
 
     if(!archivo.good()){
+        std::cout << "Error al leer el archivo \n";
         return 1;
     }
 
@@ -51,6 +52,7 @@ int Solver::leerInstancia(std::string instancia){
         maxAltura += entrada3;
         areaObjetos += entrada2 * entrada3;
     }
+
     return 0;
 }
         //Generador de población aleatoria
@@ -233,23 +235,23 @@ void Solver::evaluarPoblacionActual(int anchotira, int altotira){
         if(i.getCalidad()< mejorCalidad){
             mejorCalidad = i.getCalidad();
             mejorIndividuo = i;
+            this->bestInd = mejorIndividuo;
         }
     }
-    this->bestInd = mejorIndividuo;
+
     return;
 }
 
 void Solver::evaluarProxPoblacion(int anchotira,int altotira){
-    int mejorCalidad = 1000000000;
     Individuo mejorIndividuo;
     for(auto &i : proxPoblacion){
         i.BLF(anchotira, altotira);
-        if(i.getCalidad()< mejorCalidad){
-            mejorCalidad = i.getCalidad();
+        if(i.getCalidad()< bestInd.calidad){
             mejorIndividuo = i;
+            this->bestInd = mejorIndividuo;
         }
     }
-    this->bestInd = mejorIndividuo;
+
     return;
 }
 
@@ -279,13 +281,15 @@ int Solver::escribirOutput(std::string ruta){
     archivo << desperdicio << "\n";
 
     for(auto &i : bestInd.ordenObjetos){
-        archivo << i.x << " " << i.y << " " << i.rotacion << "\n";
+        archivo << i.x << " " << i.y << " " << i.rotacion << " "<< i.id << "\n";
     }
     archivo.close();
     return 0;
 }
 
 Individuo Solver::algoritmoGenetico(){
+    int contadorCov = 0;
+    int calidadActual = 10000000;
     //Generar la población Inicial
     generarPoblacion();
     //Evaluar la población
@@ -298,31 +302,43 @@ Individuo Solver::algoritmoGenetico(){
         if(tamanoPoblacion%2 ==0){
             for(int j=0; j < tamanoPoblacion; j += 2){
                 cruzar(padres[j], padres[j+1]);
-            }
-
-            for(auto &k : proxPoblacion){
-                k.mutar(getProbMutacion());
-            }
+            }    
         }
         //Poblacion de tamaño impar
         else{
             for(int j=0; j < (tamanoPoblacion - 1); j += 2){
                 cruzar(padres[j], padres[j+1]);
             }
-            for(auto &k : proxPoblacion){
-                k.mutar(getProbMutacion());
-            }
             //Acá se debe ingresar la mejor solución encontrada
             proxPoblacion.push_back(bestInd);
+        }
+        for(auto &k : proxPoblacion){
+            k.mutar(getProbMutacion(), anchoStrip);
         }
         //Evaluamos nuestra nueva población
         this->padres.clear();
         evaluarProxPoblacion(anchoStrip, maxAltura);
+
+        if(calidadActual == bestInd.calidad){
+            contadorCov += 1;
+        }
+        else if(calidadActual > bestInd.calidad){
+            calidadActual = bestInd.calidad;
+            contadorCov = 0;
+        }
+
         this->poblacionActual = this->proxPoblacion;
         this->proxPoblacion.clear();
+        //std::cout << i << " " << bestInd.calidad <<"\n";
+        //Si no cambia la solución en 3/4 de la cantidad de iteraciones
+        if(contadorCov == 000){
+            //std::cout<< i << "\n";
+            break;
+        }
     }
     if(print){
         this->bestInd.print(this->bestInd.ordenObjetos, anchoStrip, maxAltura);
     }
+    std::cout << bestInd.calidad << "\n";
     return this->bestInd;
 }

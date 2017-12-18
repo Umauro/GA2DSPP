@@ -39,12 +39,17 @@ void Individuo::addObjeto(Objeto obj){
 int Individuo::getCalidad(){
     return this->calidad;
 }
-void Individuo::mutar(float pmut){
-    double randomNumber;
+void Individuo::mutar(float pmut, int anchotira){
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> random(0,1.0);
+    float randomNumber;
     for(auto &i : this->ordenObjetos){
-        randomNumber = ((double)std::rand() /RAND_MAX);
+        randomNumber = random(gen);
         if(randomNumber <= pmut){
-            i.rotar();
+            if(i.alto < anchotira){
+                i.rotar();
+            }
         }
     }
 }

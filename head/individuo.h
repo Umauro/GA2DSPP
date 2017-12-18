@@ -20,7 +20,7 @@ public:
     void setCalidad(int cal);
     void addObjeto(Objeto obj);
     int getCalidad();
-    void mutar(float pmut);
+    void mutar(float pmut, int anchotira);
     void BLF(int anchotira, int altotira);
     void print(const std::vector<Objeto> & rects, int anchotira, int altotira);
 };
