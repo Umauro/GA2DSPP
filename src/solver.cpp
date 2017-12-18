@@ -302,7 +302,7 @@ Individuo Solver::algoritmoGenetico(){
         if(tamanoPoblacion%2 ==0){
             for(int j=0; j < tamanoPoblacion; j += 2){
                 cruzar(padres[j], padres[j+1]);
-            }    
+            }
         }
         //Poblacion de tamaño impar
         else{
@@ -331,7 +331,7 @@ Individuo Solver::algoritmoGenetico(){
         this->proxPoblacion.clear();
         //std::cout << i << " " << bestInd.calidad <<"\n";
         //Si no cambia la solución en 3/4 de la cantidad de iteraciones
-        if(contadorCov == 000){
+        if(contadorCov == 3000){
             //std::cout<< i << "\n";
             break;
         }
