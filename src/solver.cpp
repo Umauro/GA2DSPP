@@ -32,7 +32,7 @@ Solver::Solver(int iter, int tamano, int prints, float pcruz, float pmut){
 
 int Solver::leerInstancia(std::string instancia){
     int entrada1, entrada2, entrada3;
-
+    int maxAncho = 0;
     std::ifstream archivo(instancia);
 
     if(!archivo.good()){
@@ -50,9 +50,12 @@ int Solver::leerInstancia(std::string instancia){
         Objeto obj(entrada1, entrada2, entrada3);
         this->items.addObjeto(obj);
         maxAltura += entrada3;
+        maxAncho += entrada2;
         areaObjetos += entrada2 * entrada3;
     }
-
+    if(maxAncho > maxAltura){
+        maxAltura = maxAncho;
+    }
     return 0;
 }
         //Generador de población aleatoria

@@ -63,7 +63,7 @@ void Individuo::mutar(float pmut, int anchotira){
     for(auto &i : this->ordenObjetos){
         randomNumber = random(gen);
         if(randomNumber <= pmut){
-            if(i.alto < anchotira){
+            if(i.alto <= anchotira){
                 i.rotar();
             }
         }
